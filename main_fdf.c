@@ -105,11 +105,13 @@ void    dessine(t_win *data, t_tab *tab, t_point ***matrice)
             if (p2 == NULL)
                 p2 = ft_pointcpy(p1);
             droite(data, p2, p1, 0xFFFFFF);
+			ft_pointdel(p2);
             j++;
             p2 = ft_pointcpy(p1);
         }
         i++;
     }
+	ft_pointdel(p2);
 }
 
 void    parcours(t_win *data, t_tab *tab, t_point ***matrice)
@@ -120,7 +122,7 @@ void    parcours(t_win *data, t_tab *tab, t_point ***matrice)
     t_point *p2;
 
     j = 0;
-    p2 = NULL;
+    p1 = NULL;
     while (j < tab->line)
     {
         i = 0;
@@ -131,11 +133,13 @@ void    parcours(t_win *data, t_tab *tab, t_point ***matrice)
             if (p2 == NULL)
                 p2 = ft_pointcpy(p1);;
             droite(data, p1, p2, 0xFFFFFF);
+			ft_pointdel(p2);
             i++;
             p2 = ft_pointcpy(p1);;
         }
         j++;
     }
+	ft_pointdel(p2);
 }
 
 int			main(int argc, char **argv)
@@ -145,14 +149,15 @@ int			main(int argc, char **argv)
 	if (argc != 2)
 		return (-1);
 	win = xwin_start(1480, 800, "42");
-	win->tab = check(argv[1]);
+	if ((win->tab = check(argv[1])) == NULL)
+		return (-1);
 	config(win, 5, 5, 3, 1);
 	win->h = 3;
-	//win->matrice = iso(win, tab);
-    //parcours(win, tab, win->matrice);
-    //dessine(win, tab, win->matrice);
-    //remplire(win, tab, tab->line, tab->col);
-    //mlx_key_hook(win->win, key_hook, win);
-    //mlx_expose_hook(win->win, expose_hook, win);
-    //mlx_loop(win->ptr);
+	win->matrice = NULL;
+	win->matrice = iso(win, win->tab);
+    parcours(win, win->tab, win->matrice);
+    dessine(win, win->tab, win->matrice);
+    mlx_key_hook(win->win, key_hook, win);
+    mlx_expose_hook(win->win, expose_hook, win);
+    mlx_loop(win->ptr);
 }

@@ -34,6 +34,9 @@ typedef struct	s_win
 	int			y;
 	int			z;
 	int			h;
+	float		angle;
+	int			mid_x;
+	int			mid_y;
 }				t_win;
 
 t_win			*xwin_start(int width, int height, char *name);

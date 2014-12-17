@@ -23,14 +23,16 @@ t_tab       *check(char *file)
     int     fd;
     t_tab   *tab;
 
-    fd = open(file, O_RDONLY);
-    str = ft_strnew(1);
+    if ((fd = open(file, O_RDONLY)) == -1)
+		return (NULL);
+	str = NULL;
     ft_readfile(fd, &str);
     ft_strnrpl(&str, " ", "*", -1);
     ft_strnrpl(&str, "***", "*", -1);
     ft_strnrpl(&str, "**", "*", -1);
     tab = recup(str, '*');
     ft_tabup(tab, (ft_tabmin(tab) * -1));
+	close(fd);
     ft_strdel(&str);
     return (tab);
 }
@@ -41,4 +43,5 @@ void        config(t_win *win, int c, int c2, int zoom, int projection)
     win->c2 = c2;
     win->zoom = zoom;
     win->projection = projection;
+	win->matrice = NULL;
 }

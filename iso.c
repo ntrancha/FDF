@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include <libft.h>
+#include <math.h> 
 #include "xwin.h"
 #include <stdlib.h>
 #include <unistd.h>
@@ -53,6 +54,17 @@ void			matriceclean(t_win *data)
 	}
 }
 
+void	rot_matrix(t_point *p, t_win *data, float angle)
+{
+	float cs;
+	float sn;
+
+	sn = sin(angle);
+	cs = cos(angle);
+	p->cx = cs * (p->cx - data->tab->col * data->zoom) - sn * (p->cy - data->tab->line * data->zoom) + data->tab->col * data->zoom;
+	p->cy = sn * (p->cx - data->tab->col * data->zoom) + cs * (p->cy - data->tab->line * data->zoom) + data->tab->line * data->zoom;
+}
+
 t_point     	***iso(t_win *data, t_tab *tab)
 {
     int	     	i;
@@ -72,6 +84,7 @@ t_point     	***iso(t_win *data, t_tab *tab)
         {
             p1 = ft_pointnew(j, i, tab->tab[i][j]);
             create_iso(p1, tab, data->c, data->c2, data);
+			rot_matrix(p1, data, data->angle);
             data->matrice[i][j] = p1;
             i++;
         }

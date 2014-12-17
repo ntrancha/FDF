@@ -63,12 +63,14 @@ void    create_iso(t_point *p, t_tab *tab, int c, int c2, t_win *data)
 	int	x;
 	int	y;
 	int	z;
+	int	h;
 
 	x = (p->x * data->zoom);
 	y = (p->y * data->zoom);
+	h = ft_abs(data->h);
 	z = p->z * data->h;
 	p->cx = (data->c * x) - (data->c2 * y) + ((data->c * tab->col * data->zoom) + data->width / 10);
-	p->cy = (data->c / 2 * x) + (data->c2 / 2 * y) - z + (data->c * 2 * data->zoom) + data->height / 10;
+	p->cy = (data->c / 2 * x) + (data->c2 / 2 * y) - z + (data->c * 2 * data->zoom) + (data->height * h / 120);
 	p->cz = p->cy - (data->c / 2 * x) + (data->c2 / 2 * y);
 }
 

@@ -21,7 +21,11 @@ t_img		*img_new(t_win *data, int width, int height)
     t_img   *img;
 
 	if (data->img != NULL)
-		free(data->img);
+	{
+		ft_strdel(&(data->timg->addr));
+		ft_memdel(&data->timg->img);
+		ft_memdel((void*)&data->timg);
+	}
     if ((img = malloc(sizeof(t_img))) == NULL)
         return (NULL);
     if ((img->img = mlx_new_image(data->ptr, width * 4, height * 4)) == NULL)
@@ -44,6 +48,7 @@ t_win		*xwin_start(int width, int height, char *name)
 	if ((data = malloc(sizeof(t_win))) == NULL || width < 1 || height < 1)
 		return (NULL);
 	data->img = NULL;
+	data->timg = NULL;
     if ((data->ptr = mlx_init()) == NULL || name == NULL)
         return (NULL);
     if (!(data->win = mlx_new_window(data->ptr, width, height, name)))
@@ -62,7 +67,9 @@ t_win		*xwin_start(int width, int height, char *name)
 	data->y = 0;
 	data->z = 0;
 	data->h = 0;
-	data->matrice = NULL;
+	data->angle = 0;
+	data->mid_x = 0;
+	data->mid_y = 0;
     return (data);
 }
 
@@ -107,12 +114,15 @@ void    my_pixel_put_to_image(t_img *img, int x, int y, int color)
 
 int     expose_hook(t_win *win)
 {
-	win->matrice = iso(win, win->tab);
-	img_new(win, win->width, win->height);
-	//win->img->img = mlx_new_image(win->ptr, win->width, win->height);
-	//win->img->addr = mlx_get_data_addr(img->img, &img->bpp, &img->lsize, &img->endian);
-	parcours(win, win->tab, win->matrice);
-    dessine(win, win->tab, win->matrice);
+	if (win->z == 1)
+	{
+		win->matrice = iso(win, win->tab);
+		img_new(win, win->width, win->height);
+		parcours(win, win->tab, win->matrice);
+	    dessine(win, win->tab, win->matrice);
+		//mlx_clear_window(win->ptr, win->win);
+		win->z = 0;
+	}
     mlx_put_image_to_window(win->ptr, win->win, win->img, win->x, win->y);
     return (0);
 }
@@ -128,16 +138,38 @@ int     key_hook(int k, t_win *e)
 		e->y -= e->zoom * 6;
     if (k == 65364)
 		e->y += e->zoom * 6;
-    if (k == 65451)
+    if (k == 65451 && e->zoom < 9)
 		e->zoom++;
-    if (k == 65453)
+    if (k == 65453 && e->zoom > 1)
 		e->zoom--;
+	if (k == 40)
+        e->c2++;
+	if (k == 45)
+        e->c2--;
+	if (k == 39)
+        e->c++;
+	if (k == 34)
+        e->c--;
     if (k == 38)
 		e->h++;
     if (k == 233)
 		e->h--;
+    if (k == 232)
+		e->angle++;
+    if (k == 95)
+		e->angle--;
     if (k == 65307)
+	{
+		ft_strdel(&(e->timg->addr));
+		ft_memdel(&e->timg->img);
+		ft_memdel((void*)&e->timg);
+		matriceclean(e);
+		ft_tabdel(&(e->tab));
+		mlx_destroy_window(e->ptr, e->win);
         exit(0);
+	}
+	if (k < 65361 || k > 65364)
+		e->z = 1;
 	expose_hook(e);
     return (0);
 }
